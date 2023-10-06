@@ -8,7 +8,7 @@ You can contribute back the changes you want to make.
 import dataclasses
 from enum import auto, IntEnum
 from typing import List, Any, Dict, Union
-
+from fastchat.functionary import prompt as prompt_util
 
 class SeparatorStyle(IntEnum):
     """Separator styles."""
@@ -1007,6 +1007,22 @@ register_conv_template(
         sep_style=SeparatorStyle.NO_COLON_SINGLE,
         sep="",
         stop_str="<|user|>",
+    )
+)
+
+class FunctionaryConversation(Conversation):
+    def get_prompt(self) -> str:
+        """Get the prompt for generation."""
+        f_messages = []
+        for role, message in self.messages:
+            f_messages.append({"role": role, "content": message})
+        return prompt_util.get_prompt_from_messages(message, [])
+
+register_conv_template(
+    FunctionaryConversation(
+        name="functionary",
+        roles=("user", "assistant"),
+        stop_token_ids = [32002, 32004],
     )
 )
 
